@@ -26,7 +26,6 @@ class Snail {
         this.eyeColor = new Color();
 
         this.patternType = PatternType.SOLID;
-        this.personalityType = Personality.Neutral;
 
         // Genes
         this.shellColorGene = new ColorGene();
@@ -117,113 +116,21 @@ class Snail {
     getTraitsInCommonWithBff() {
         // The more dominant genes the snails have in common the closer they are.
         if (GeneUtil.getDominantTrait(this.shellColorGene) === GeneUtil.getDominantTrait(bestFriend.shellColorGene)) {
-            this.traitsInCommonWithBff.push("Shell Color");
+            this.traitsInCommonWithBff.push(this.shellColorGene.name);
         }
         if (GeneUtil.getDominantTrait(this.eyeColorGene) === GeneUtil.getDominantTrait(bestFriend.eyeColorGene)) {
-            this.traitsInCommonWithBff.push("Eye Color");
+            this.traitsInCommonWithBff.push(this.eyeColorGene.name);
         }
         if (GeneUtil.getDominantTrait(this.patternColorGene) === GeneUtil.getDominantTrait(bestFriend.patternColorGene)) {
-            this.traitsInCommonWithBff.push("Pattern Color");
+            this.traitsInCommonWithBff.push(this.patternColorGene.name);
         }
         if (GeneUtil.getDominantTrait(this.shellPatternGene) === GeneUtil.getDominantTrait(bestFriend.shellPatternGene)) {
-            this.traitsInCommonWithBff.push("Pattern Shape");
+            this.traitsInCommonWithBff.push(this.shellPatternGene.name);
         }
     }
 
     showDetails() {
-        var detailDiv = document.getElementById("snailDetails");
-        detailDiv.style = "visibility: visible";
-        var detailSnailName = document.getElementById("selectedSnailName");
-        detailSnailName.innerHTML = this.name;
- 
-        if (this !== bestFriend) {
-            this.displayDetailsSection();
-        } else {
-            var details = document.getElementById("selectedSnailDetails");
-            details.style = "visibility: hidden";
-        }
-        this.displayGeneSection();
-        if (this !== bestFriend) {
-            this.displayBreedingSection();
-        } else {
-            var breedSection = document.getElementById("breedSnailSection");
-            breedSection.style = "visibility: hidden";
-        }
-    }
-
-    displayGeneSection() {
-        var geneSection = document.getElementById("selectedSnailGenes");
-        if (this.age > 0) {
-            geneSection.style = "visibility: visible";
-            var inner = "<h3>Genes</h3>";
-            inner += "<table><tr><th>Name</th><th>Allele 1</th><th>Allele 2</th></tr>";
-            inner += "<tr><td>Shell Color</td>";
-            inner += "<td>" + this.shellColorGene.allele1 + "</td>";
-            inner += "<td>" + this.shellColorGene.allele2 + "</td></tr>";
-
-            inner += "<tr><td>Eye Color</td>";
-            inner += "<td>" + this.eyeColorGene.allele1 + "</td>";
-            inner += "<td>" + this.eyeColorGene.allele2 + "</td></tr>";
-
-            inner += "<tr><td>Pattern Color</td>";
-            inner += "<td>" + this.patternColorGene.allele1 + "</td>";
-            inner += "<td>" + this.patternColorGene.allele2 + "</td></tr>";
-
-            inner += "<tr><td>Pattern Shape</td>";
-            inner += "<td>" + this.shellPatternGene.allele1 + "</td>";
-            inner += "<td>" + this.shellPatternGene.allele2 + "</td></tr>";
-            inner += "</table>"
-        
-            geneSection.innerHTML = inner;
-        }
-        else {
-            geneSection.style = "visibility: hidden";
-        }
-    }
-
-    displayDetailsSection() {
-        var details = document.getElementById("selectedSnailDetails");
-        details.style = "visibility: visible";
-
-        details.innerHTML = "<ul>";
-        details.innerHTML += "<li><strong>Age:</strong> " + this.age + " days</li>"
-
-        if (this.age > 0) {
-            details.innerHTML += "<li><strong>Proximity to " + bestFriend.name + ": </strong>" + this.proximityToBestFriend + "/" + this.maxPoints + "</li>";
-            details.innerHTML += "<li><strong>Traits in common:</strong> ";
-            for (var i = 0; i < this.traitsInCommonWithBff.length; i++) {
-                var trait = this.traitsInCommonWithBff[i];
-                details.innerHTML += trait;
-                if (i < this.traitsInCommonWithBff.length - 1) {
-                    details.innerHTML += ", ";
-                }
-            }
-            details.innerHTML += "</li>";
-            details.innerHTML += "<li><strong>Orientation:</strong>" + this.sexualOrientationDesc + "</li>";
-        }
-        details.innerHTML += "<li><strong>Stag:</strong> " + this.stagName + "</li>";
-        details.innerHTML += "<li><strong>Doe:</strong> " + this.doeName + "</li>";
-        details.innerHTML += "</ul>";
-    }
-
-    displayBreedingSection() {
-        var breedSection = document.getElementById("breedSnailSection");
-        if (this.age > 0) {
-            breedSection.style = "visibility: visible";
-            
-            var mateSelection = document.getElementById("breedSnailSelect");
-            mateSelection.innerHTML = "";
-            for (var i = 0; i < eligibleSnails.length; i++) {
-            
-                var snail = eligibleSnails[i];
-                if (snail.name !== this.name && snail.age > 0) {
-                    mateSelection.innerHTML += "<option value='" + snail.name + "'>" + snail.name + "</option>"
-                }
-            }
-        }
-        else {
-            breedSection.style = "visibility: hidden";
-        }
+        ui.showSnailDetails(this);
     }
 
     killAndNotify(cod) {
@@ -280,7 +187,6 @@ class Snail {
         ctx.strokeRect(posX+(cRadius/2), posY+(cRadius/2), 215-cRadius, 75-cRadius);
         ctx.fillRect(posX+(cRadius/2), posY+(cRadius/2), 215-cRadius, 75-cRadius);
 
-    //    ctx.fillRect(this.posX, this.posY, 100, 100);
         ctx.restore();
     }
 
@@ -436,7 +342,6 @@ class Snail {
         }
 
         ctx.restore();
-
     }
 
     drawOrienationSymbol() {
@@ -487,6 +392,4 @@ class Snail {
        
         this.drawStats(posX, posY);
     }
-
-
 }

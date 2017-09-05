@@ -18,7 +18,7 @@ class RandomSnailGenerator extends SnailGenerator {
 
     generateShellColor(snail) {
         // Get two random alleles for the gene
-        snail.shellColorGene = new ColorGene();
+        snail.shellColorGene = new ColorGene("Shell Color");
         snail.shellColorGene.allele1 = this.pickRandomColorAllele();
         snail.shellColorGene.allele2 = this.pickRandomColorAllele();
 
@@ -27,21 +27,21 @@ class RandomSnailGenerator extends SnailGenerator {
     }
 
     generatePatternColor(snail) {
-        snail.patternColorGene = new ColorGene();
+        snail.patternColorGene = new ColorGene("Pattern Color");
         snail.patternColorGene.allele1 = this.pickRandomColorAllele();
         snail.patternColorGene.allele2 = this.pickRandomColorAllele();
         snail.patternColor = this.pickColorFromGene(snail.patternColorGene);
     }
 
     generateEyeColor(snail) {
-        snail.eyeColorGene = new ColorGene();
+        snail.eyeColorGene = new ColorGene("Eye Color");
         snail.eyeColorGene.allele1 = this.pickRandomColorAllele();
         snail.eyeColorGene.allele2 = this.pickRandomColorAllele();
         snail.eyeColor = this.pickColorFromGene(snail.eyeColorGene);
     }
 
     generatePattenType(snail) {
-        snail.shellPatternGene = new PatternGene();
+        snail.shellPatternGene = new PatternGene("Pattern Shape");
         snail.shellPatternGene.allele1 = this.pickRandomPatternAllele();
         snail.shellPatternGene.allele2 = this.pickRandomPatternAllele();
         snail.patternType = this.pickPatternFromGene(snail.shellPatternGene);

@@ -59,14 +59,14 @@ class FoalGenerator extends SnailGenerator {
     }
 
     getColorGene(stagGene, doeGene) {
-        var gene = new ColorGene();
+        var gene = new ColorGene(stagGene.name);
         gene.allele1 = this.generateAlleles(stagGene.allele1, stagGene.allele2);
         gene.allele2 = this.generateAlleles(doeGene.allele1, stagGene.allele2);
         return gene;
     }
 
     getPatternGene(stagGene, doeGene) {
-        var gene = new PatternGene();
+        var gene = new PatternGene(stagGene.name);
         gene.allele1 = this.generateAlleles(stagGene.allele1, stagGene.allele2);
         gene.allele2 = this.generateAlleles(doeGene.allele1, stagGene.allele2);
         return gene;

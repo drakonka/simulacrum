@@ -6,12 +6,12 @@
         <link rel="stylesheet" type="text/css" href="style.css">
         <script src="js/ui/menu.js" ></script>
         <script src="js/ui/gameplay.js" ></script>
-        <script src="js/snail/snailutil.js"></script>
         <script src="js/snail/snail.js"></script>
         <script src="js/snail/gene.js"></script>
         <script src="js/snail/generators/snailgenerator.js"></script>
         <script src="js/snail/generators/foalgenerator.js"></script>
         <script src="js/snail/generators/randomsnailgenerator.js"></script>
+        <script src="js/util/snailutil.js"></script>
         <script src="js/util/mathutil.js"></script>
         <script src="js/util/colorutil.js"></script>
         <script src="js/util/util.js"></script>
@@ -20,36 +20,35 @@
 	<body>
         <div class="wrapper" align="center">
             <h1 id="title" align="center">Simulacrum</span></h1>
-            <div id="canvas">
-                <div id="instructions">
-                <h2>Instructions</h2>
-                Your best friend [bffname] the snail has disappeared from your garden patch!
-                <p>You have searched far and wide, but it is nowhere to be found.</p>
-                <p>Sensing yourself falling into a deep depression over the loss of your friend, you decide to take matters into your own hands...</p>
-                <p>...by breeding a snail who looks just like [bffname]!</p>
-                <p>
-                    <button type="button" onclick="main()">Restart</button>
-                    <button type="button" onclick="SnailUtil.shuffleSnails()">Shuffle Snail Roster</button>
-                    <button type="button" onclick="incrementDay()">Sleep</button>
-                </p>
-                </div>
-                <canvas id="gameCanvas" height="600" width="900" align="center"></canvas>
-                <div id="snailDetails">
-                    <h2 id="selectedSnailName">[snailname]</h2>
-                    <br /><a href="javascript:void(0)" onclick="InputHandler.renameSelectedSnail();">Rename</a>
-                    <div id="selectedSnailDetails" align="left"></div>
-                    <div id="selectedSnailGenes" align="left"></div>
-                    <div id="breedSnailSection"><h3>Breed Snail</h3>
-                        <form id ="breedSnailForm" onsubmit="return SnailUtil.tryBreedSnails(this);">
-                            <select id="breedSnailSelect" name="mates">
-                                <option value="None">None</option>
-                            </select>
-                            <input type="submit">
-                        </form>
-                    </div>
+            <div id="instructions">
+            <h2>Instructions</h2>
+            Your best friend [bffname] the snail has disappeared from your garden patch! You have searched far and wide, but it is nowhere to be found.</p>
+            <p>Sensing yourself falling into a deep depression over the loss of your friend, you decide to take matters into your own hands by <strong>breeding a snail who looks just like [bffname]!</strong></p>
+            <p>You have until the end of summer, 15 days, to produce your best effort.</p>
+            <p>Proximity to your best friend is governed mostly by the genetic traits they have in common and only slightly by the specific color <i>proximity</i> of various traits. A 100% identical clone of your BFF will have a perfect proximity score of <strong>26</strong>. Pay attention to the potential gene combinations to try to breed for your desired traits.</p>
+            <p>
+                <button type="button" onclick="main()">Restart</button>
+                <button type="button" onclick="SnailUtil.shuffleSnails()">Shuffle Snail Roster</button>
+                <button type="button" onclick="incrementDay()">Sleep</button>
+            </p>
+            </div>
+            <canvas id="gameCanvas" height="600" width="900" align="center"></canvas>
+            <div id="breedingPreview">TEST</div>
+            <div id="snailDetails">
+                <h2 id="selectedSnailName">[snailname]</h2>
+                <br /><a href="javascript:void(0)" onclick="InputHandler.renameSelectedSnail();">Rename</a>
+                <div id="selectedSnailDetails" align="left"></div>
+                <div id="selectedSnailGenes" align="left"></div>
+                <div id="breedSnailSection"><h3>Breed Snail</h3>
+                    <form id ="breedSnailForm" onsubmit="return SnailUtil.tryBreedSnails(this);">
+                        <select id="breedSnailSelect" name="mates">
+                            <option value="None">None</option>
+                        </select>
+                        <input type="submit">
+                        <button type="button" onclick="SnailUtil.previewBreeding()">Preview</button>
+                    </form>
                 </div>
             </div>
-
         </div>
 
         <script src="js/main.js"></script>

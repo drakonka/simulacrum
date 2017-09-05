@@ -1,22 +1,14 @@
 var PatternType = {
-  SOLID: "Solid",
-  CHERRY: "Cherry",
-  SQUARECHERRY: "Square Cherry",
-  BLOTCHY: "Blotchy",
+  SOLID: "S",
+  CHERRY: "C",
+  SQUARECHERRY: "Sc",
+  BLOTCHY: "B",
 };
 
 var ColorAllele = {
   Red: "R",
   Green: "G",
   Blue: "B",
-};
-
-var Personality = {
-  Neutral: "Neutral",
-  Curious: "Curious",
-  Friendly: "Friendly",
-  Amorous: "Amorous",
-  Aggressive: "Aggressive",
 };
 
 var CauseOfDeath = {
@@ -43,6 +35,50 @@ class SnailUtil {
                 return snail;
             }
         }
+    }
+
+    static previewBreeding() {
+        try {
+            var selectedSnail = SnailUtil.getSelectedSnail();
+            var select = document.getElementById('breedSnailSelect');
+            var mateName = select.options[select.selectedIndex].value;
+            var mateSnail = SnailUtil.getSnailByName(mateName);
+            var shellColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.shellColorGene, mateSnail.shellColorGene);
+            var eyeColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.eyeColorGene, mateSnail.eyeColorGene);
+            var patternColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.patternColorGene, mateSnail.patternColorGene);
+            var patternShapeGeneCombos = SnailUtil.getGeneCombos(selectedSnail.shellPatternGene, mateSnail.shellPatternGene);
+            var geneCombos = [
+                shellColorGeneCombos,
+                eyeColorGeneCombos,
+                patternColorGeneCombos,
+                patternShapeGeneCombos
+            ];
+            ui.displayBreedingPreviewChart(selectedSnail.name, mateName, geneCombos);
+        }
+        catch (e) {
+            console.log(e);
+        }
+        return false;
+    }
+
+    static getGeneCombos(gene1, gene2) {
+        var c1 = new Gene(gene1.name);
+        c1.allele1 = gene1.allele1;
+        c1.allele2 = gene2.allele1;
+
+        var c2 = new Gene(gene1.name);
+        c2.allele1 = gene1.allele1;
+        c2.allele2 = gene2.allele2;
+
+        var c3 = new Gene(gene1.name);
+        c3.allele1 = gene1.allele2;
+        c3.allele2 = gene2.allele1;     
+
+        var c4 = new Gene(gene1.name);
+        c4.allele1 = gene1.allele2;
+        c4.allele2 = gene2.allele2;   
+
+        return [c1, c2, c3, c4];        
     }
 
     static tryBreedSnails(selection) {

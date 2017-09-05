@@ -1,13 +1,21 @@
-class ColorGene {
-    constructor() {
+class Gene {
+    constructor(name) {
+        this.name = name;
+    }
+}
+
+class ColorGene extends Gene {
+    constructor(name) {
+        super(name);
         this.allele1 = ColorAllele.Red;
         this.allele2 = ColorAllele.Red;
     }
 }
 
-class PatternGene {
+class PatternGene extends Gene {
 
-    constructor() {
+    constructor(name) {
+        super(name);
         this.allele1 = PatternType.SOLID;
         this.allele2 = PatternType.SOLID;
     }
