@@ -18,7 +18,6 @@ body {
 
 #instructions {
     height:580px;
-    width:15%;
     overflow:auto;
     border: 7px dashed #ef6316;
     background-color:yellowgreen;
@@ -33,7 +32,6 @@ body {
 
 #snailDetails {
     height:580px;
-    width:15%;
     overflow:auto;
     border: 7px dashed #ef6316;
     background-color:yellowgreen;
