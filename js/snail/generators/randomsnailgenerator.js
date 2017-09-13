@@ -2,14 +2,23 @@ class RandomSnailGenerator extends SnailGenerator {
     generateRandomSnail() {
         var snail = new Snail();
         this.generateShellColor(snail);
-        this.generatePatternColor(snail);
-        this.generateEyeColor(snail);
-        this.generatePattenType(snail);
+        if (year >= 2) {
+            this.generateEyeColor(snail);
+        }
+        if (year >= 3) {
+            this.generatePattenType(snail);
+        }
+        if (year >= 4) {
+            this.generatePatternColor(snail);
+        }
         snail.currentScale = 1;
 
         if (bestFriend != null && snail.name !== bestFriend.name) {
             snail.getTraitsInCommonWithBff();
-            while (snail.proximityToBestFriend > 10) {
+            var maxProx = Math.floor(year / 2);
+         
+            while (snail.proximityToBestFriend > maxProx) {
+                console.log("Adjusting random snail...");
                 snail = this.generateRandomSnail();
             }
         }
@@ -18,33 +27,39 @@ class RandomSnailGenerator extends SnailGenerator {
 
     generateShellColor(snail) {
         // Get two random alleles for the gene
-        snail.shellColorGene = new ColorGene("Shell Color");
-        snail.shellColorGene.allele1 = this.pickRandomColorAllele();
-        snail.shellColorGene.allele2 = this.pickRandomColorAllele();
+        var shellColorGene = new ColorGene("Shell Color");
+        shellColorGene.allele1 = this.pickRandomColorAllele();
+        shellColorGene.allele2 = this.pickRandomColorAllele();
+        var dominantAllele = GeneUtil.getDominantAllele(shellColorGene);
+        
+        snail.genes.push(shellColorGene);
 
         // Generate color based on dominant allele;
-        snail.shellColor = this.pickColorFromGene(snail.shellColorGene);   
+        snail.shellColor = this.pickColorFromGene(shellColorGene);   
     }
 
     generatePatternColor(snail) {
-        snail.patternColorGene = new ColorGene("Pattern Color");
-        snail.patternColorGene.allele1 = this.pickRandomColorAllele();
-        snail.patternColorGene.allele2 = this.pickRandomColorAllele();
-        snail.patternColor = this.pickColorFromGene(snail.patternColorGene);
+        var patternColorGene = new ColorGene("Pattern Color");
+        patternColorGene.allele1 = this.pickRandomColorAllele();
+        patternColorGene.allele2 = this.pickRandomColorAllele();
+        snail.genes.push(patternColorGene);
+        snail.patternColor = this.pickColorFromGene(patternColorGene);
     }
 
     generateEyeColor(snail) {
-        snail.eyeColorGene = new ColorGene("Eye Color");
-        snail.eyeColorGene.allele1 = this.pickRandomColorAllele();
-        snail.eyeColorGene.allele2 = this.pickRandomColorAllele();
-        snail.eyeColor = this.pickColorFromGene(snail.eyeColorGene);
+        var eyeColorGene = new ColorGene("Eye Color");
+        eyeColorGene.allele1 = this.pickRandomColorAllele();
+        eyeColorGene.allele2 = this.pickRandomColorAllele();
+        snail.genes.push(eyeColorGene);
+        snail.eyeColor = this.pickColorFromGene(eyeColorGene);
     }
 
     generatePattenType(snail) {
-        snail.shellPatternGene = new PatternGene("Pattern Shape");
-        snail.shellPatternGene.allele1 = this.pickRandomPatternAllele();
-        snail.shellPatternGene.allele2 = this.pickRandomPatternAllele();
-        snail.patternType = this.pickPatternFromGene(snail.shellPatternGene);
+        var shellPatternGene = new PatternGene("Pattern Shape");
+        shellPatternGene.allele1 = this.pickRandomPatternAllele();
+        shellPatternGene.allele2 = this.pickRandomPatternAllele();
+        snail.genes.push(shellPatternGene);
+        snail.patternType = this.pickPatternFromGene(shellPatternGene);
     }
 
 

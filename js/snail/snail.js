@@ -8,7 +8,7 @@ class Snail {
         this.doDrawTile = true;
 
         this.isBestAttempt = false;
-    
+        this.generation = 1;
 
         this.img = new Image();
         this.img.src = this.imgSrc;
@@ -28,10 +28,7 @@ class Snail {
         this.patternType = PatternType.SOLID;
 
         // Genes
-        this.shellColorGene = new ColorGene();
-        this.patternColorGene = new ColorGene();
-        this.eyeColorGene = new ColorGene();
-        this.shellPatternGene = new PatternGene();
+        this.genes = [];
 
         // Fluid traits
         this.lust = 0;
@@ -43,6 +40,30 @@ class Snail {
 
 
     //   this.img.onload = this.draw();
+    }
+
+    findGene(name) {
+        for (var i = 0; i < this.genes.length; i++) {
+            var gene = this.genes[i];
+            if (gene.name === name) {
+                return gene;
+            }
+        }
+        return null;
+    }
+
+    unlockNextGene() {
+        var generator = new RandomSnailGenerator();
+        if (year === 2) {
+            generator.generateEyeColor(this);
+        }
+        if (year === 3) {
+            generator.generatePattenType(this);
+        }
+        if (this.genes.length < 4 && year === 4) {
+            generator.generatePatternColor(this);
+        }
+        this.currentScale = 1;
     }
 
     generateRandomName() {
@@ -96,36 +117,19 @@ class Snail {
         return "very confused!"
     }
 
-    get proximityToBestFriend() {
-        if (!bestFriend) {
-            return 0;
-        }
-        var points = this.traitsInCommonWithBff.length * 5;
-
-        var shellColorDiff = ColorUtil.getDeltaE(this.shellColor, bestFriend.shellColor);
-        var eyeColorDiff = ColorUtil.getDeltaE(this.eyeColor, bestFriend.eyeColor);
-        var patternColorDiff = ColorUtil.getDeltaE(this.patternColor, bestFriend.patternColor);
-
-        var scp = 100 - shellColorDiff;
-        var ecp = 100 - eyeColorDiff;
-        var pcp = 100 - patternColorDiff;
-        points += scp / 50 + ecp / 50 + pcp / 50;
-        return Math.round(points);
+   get proximityToBestFriend() {
+        return this.traitsInCommonWithBff.length;
     }
 
     getTraitsInCommonWithBff() {
         // The more dominant genes the snails have in common the closer they are.
-        if (GeneUtil.getDominantTrait(this.shellColorGene) === GeneUtil.getDominantTrait(bestFriend.shellColorGene)) {
-            this.traitsInCommonWithBff.push(this.shellColorGene.name);
-        }
-        if (GeneUtil.getDominantTrait(this.eyeColorGene) === GeneUtil.getDominantTrait(bestFriend.eyeColorGene)) {
-            this.traitsInCommonWithBff.push(this.eyeColorGene.name);
-        }
-        if (GeneUtil.getDominantTrait(this.patternColorGene) === GeneUtil.getDominantTrait(bestFriend.patternColorGene)) {
-            this.traitsInCommonWithBff.push(this.patternColorGene.name);
-        }
-        if (GeneUtil.getDominantTrait(this.shellPatternGene) === GeneUtil.getDominantTrait(bestFriend.shellPatternGene)) {
-            this.traitsInCommonWithBff.push(this.shellPatternGene.name);
+        this.traitsInCommonWithBff = [];
+        for (var i = 0; i < this.genes.length; i++) {
+            var gene = this.genes[i];
+            var bffGene = bestFriend.findGene(gene.name);
+            if (GeneUtil.getDominantAllele(gene) === GeneUtil.getDominantAllele(bffGene)) {
+                this.traitsInCommonWithBff.push(gene.name);
+            }
         }
     }
 
@@ -142,7 +146,13 @@ class Snail {
     }
 
     tryToRename(newName) {
-        if (bestFriend.name === newName) {
+        if (newName.length > 10) {
+            alert("Your new chosen name is more than 10 characters long! That's too long for a snail name.");
+            return;
+         } else if (this.name === bestFriend.name) {
+            alert("You can't rename your missing best friend. You monster.");
+            return;
+        } else if (bestFriend.name === newName) {
             alert("You shouldn't try to name another snail by the name of your best friend - it won't fill the hole in your heart.");
             return;
         } else {
@@ -222,7 +232,11 @@ class Snail {
     }
 
     drawCherryPattern(posX, posY, offsetX, offsetY) {
-        var fill = ColorUtil.formatRGBA(this.patternColor, 1);
+        var fill = "#fff";
+        if (this.patternColor !== null) {
+            var fill = ColorUtil.formatRGBA(this.patternColor, 1);
+        }
+
         ctx.fillStyle = fill;
 
         // Marking one
@@ -254,7 +268,10 @@ class Snail {
     }
 
     drawSquareCherryPattern(posX, posY, offsetX, offsetY) {
-        var fill = ColorUtil.formatRGBA(this.patternColor, 1);
+        var fill = "#fff";
+        if (this.patternColor !== null) {
+            var fill = ColorUtil.formatRGBA(this.patternColor, 1);
+        }
         ctx.fillStyle = fill;
 
         var l = 10 * this.currentScale;
@@ -284,6 +301,12 @@ class Snail {
         var x = posX + offsetX + 47 * this.currentScale;
         var y = posY + offsetY + 30 * this.currentScale;
 
+        var fill = "#fff";
+        if (this.patternColor !== null) {
+            var fill = ColorUtil.formatRGBA(this.patternColor, 1);
+        }
+
+
         ctx.arc(x, y,r,-2,2*Math.PI);
         ctx.fill();
     }
@@ -306,9 +329,15 @@ class Snail {
 
     drawSnail(posX, posY, offsetX, offsetY) {
         ctx.save();
-        this.drawShell(posX, posY, offsetX, offsetY);
-        this.drawEye(posX, posY, offsetX, offsetY);
-        this.drawPattern(posX, posY, offsetX, offsetY);
+        if (this.shellColor !== null) {
+            this.drawShell(posX, posY, offsetX, offsetY);
+        }
+        if (this.eyeColor !== null) {
+            this.drawEye(posX, posY, offsetX, offsetY);
+        }
+        if (this.patternType !== null) {
+            this.drawPattern(posX, posY, offsetX, offsetY);
+        }
         var w = this.img.width;
         var h = this.img.height;
         var x = posX + offsetX;
@@ -372,7 +401,7 @@ class Snail {
     draw() {
         var posX = this.posX;
         var posY = this.posY;
-        if (this.isBestAttempt) {
+        if (!isDone && this.isBestAttempt && daysLeft > 0) {
             posX = ui.bestAttemptBlock.posX - 20;
             posY = ui.bestAttemptBlock.posY + 25;
         }

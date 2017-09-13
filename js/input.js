@@ -6,12 +6,15 @@ class InputHandler {
 
     onClick(e) {
         var rect = canvas.getBoundingClientRect();
-
         var mousePoint = {
             posX: e.clientX - rect.left,
             posY: e.clientY - rect.top
         };
+       
         var allSnails = SnailUtil.getAllLiveSnails();
+        if (isDone) {
+            allSnails = [SnailUtil.getBestAttempt()];
+        }
         allSnails.push(bestFriend);
         for (var i = 0; i < allSnails.length; i++) {
             var snail = allSnails[i];
@@ -26,7 +29,7 @@ class InputHandler {
     hitsTarget(point, target) {
         var posX = target.posX;
         var posY = target.posY;
-        if (target.isBestAttempt) {
+        if (target.isBestAttempt && isDone === false) {
             posX = ui.bestAttemptBlock.posX - 20;
             posY = ui.bestAttemptBlock.posY + 25;
         }

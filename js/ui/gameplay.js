@@ -55,12 +55,105 @@ class GameplayUI {
         ctx.fillText(this.bestAttemptBlock.text, this.bestAttemptBlock.posX, this.bestAttemptBlock.posY);
         ctx.fillText(this.breedingPoolBlock.text, this.breedingPoolBlock.posX, this.breedingPoolBlock.posY);
 
+        ctx.save();
+        ctx.textBaseline = "bottom";
+        ctx.fillText("Year: " + year, 10, canvas.height - 10);
+        ctx.restore();
+
         ctx.font = "60px Arial";
         ctx.textAlign = "center";
         ctx.fillText(daysLeft, this.daysLeftBlock.posX + 55, this.daysLeftBlock.posY + 30);
+        ctx.restore();
+    }
 
+    drawFailResult(bestFriend, bestAttempt) {
+        bestFriend.draw();
+        bestAttempt.draw();
+
+        ctx.save();
+        ctx.font = "60px Arial";
+        ctx.fillStyle = "green";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "center";
+        ctx.fillText("Time's up!", canvasWidth / 2, 20);
+
+        ctx.font = "20px Arial";
+        ctx.textAlign = "left";
+        var x = 50;
+        var y = bestFriend.posY + 120;
+        var generationLabel = "wild snail";
+        if (bestAttempt.generation > 1) {
+            generationLabel = bestAttempt.generation + "nd generation offspring";
+        }
+        var traitStr = "You achieved the following common traits: ";
+        for (var i = 0; i < bestAttempt.traitsInCommonWithBff.length; i++) {
+            var traitName = bestAttempt.traitsInCommonWithBff[i].name;
+            traitStr += traitName;
+            if (i < bestAttempt.traitsInCommonWithBff.length - 1) {
+                traitStr += ", ";
+            }
+            else {
+                traitStr += ".";
+            }
+        }
+        var lines = [
+            "Summer is over and with it the breeding season.",
+            "- Your best attempt to breed a snail like " + bestFriend.name + " is " + bestAttempt.name + ".",
+            "- " + bestAttempt.name + " is a " + generationLabel + "."
+        ];
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            ctx.fillText(line, x, y);
+            y += 23;
+        }
         ctx.restore();
 
+    }
+
+    drawWinResult(bestFriend, bestAttempt) {
+        bestFriend.draw();
+        bestAttempt.draw();
+
+        ctx.save();
+        ctx.font = "60px Arial";
+        ctx.fillStyle = "green";
+        ctx.textBaseline = "top";
+        ctx.textAlign = "center";
+        ctx.fillText("You did it!", canvasWidth / 2, 20);
+
+        ctx.font = "20px Arial";
+        ctx.textAlign = "left";
+        var x = 50;
+        var y = bestFriend.posY + 120;
+        var generationLabel = "wild snail";
+        if (bestAttempt.generation > 1) {
+            generationLabel = bestAttempt.generation + "nd generation offspring";
+        }
+        var traitStr = "You achieved the following common traits: ";
+        for (var i = 0; i < bestAttempt.traitsInCommonWithBff.length; i++) {
+            var traitName = bestAttempt.traitsInCommonWithBff[i].name;
+            traitStr += traitName;
+            if (i < bestAttempt.traitsInCommonWithBff.length - 1) {
+                traitStr += ", ";
+            }
+            else {
+                traitStr += ".";
+            }
+        }
+        var lines = [
+            "You did it! You bred a snail whose traits perfectly match your best friend.",
+            "- " + bestAttempt.name + " is a " + generationLabel + ".",
+            "",
+        ];
+        if (year < 4) {
+            lines.push("You seem to have discovered more traits! Maybe you should keep living...");
+        }
+        for (var i = 0; i < lines.length; i++) {
+            var line = lines[i];
+            ctx.fillText(line, x, y);
+            y += 23;
+        }
+        ctx.restore();
 
     }
 
@@ -87,25 +180,22 @@ class GameplayUI {
 
     displayGeneSection(snail) {
         var geneSection = document.getElementById("selectedSnailGenes");
-        if (snail.age > 0) {
-            geneSection.style = "visibility: visible";
-            var inner = "<h3>Genes</h3>";
-            inner += "<table><tr><th>Name</th><th>Allele 1</th><th>Allele 2</th></tr>";
-            inner += this.buildGeneRow(snail.shellColorGene);
-            inner += this.buildGeneRow(snail.eyeColorGene);
-            inner += this.buildGeneRow(snail.patternColorGene);
-            inner += this.buildGeneRow(snail.shellPatternGene);
-            inner += "</table>"
-        
-            geneSection.innerHTML = inner;
+        geneSection.style = "visibility: visible";
+        var inner = "<h3>Genes</h3>";
+        inner += "<p>Color gene dominance: R > G > B<br />";
+        inner += "Shape gene dominance: S > C > SC > B</p>";
+
+        inner += "<table><tr><th>Name</th><th>Allele 1</th><th>Allele 2</th></tr>";
+        for (var i = 0; i < snail.genes.length; i++) {
+            var gene = snail.genes[i];
+            inner += this.buildGeneRow(gene);
         }
-        else {
-            geneSection.style = "visibility: hidden";
-        }
+        inner += "</table>"
+        geneSection.innerHTML = inner;
     }
 
     buildGeneRow(gene) {
-        var dominantAllele = GeneUtil.getDominantTrait(gene);
+        var dominantAllele = GeneUtil.getDominantAllele(gene);
         var inner = "<tr><td>" + gene.name + "</td><td>";
 
         if (dominantAllele === gene.allele1) {
@@ -187,7 +277,6 @@ class GameplayUI {
             inner += "<td colspan=3><strong>" + geneCombo[0].name + " possibilities</strong></td></tr>";
             inner += "<tr><td></td><td>" + geneCombo[0].allele2 + "</td>";
             inner += "<td>" + geneCombo[1].allele2 + "</td></tr>";
-            console.log(geneCombo);
             for (var n = 0; n < geneCombo.length; n++) {
                 var gene = geneCombo[n];
                 if (n === 0) {

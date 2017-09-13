@@ -7,6 +7,7 @@ class FoalGenerator extends SnailGenerator {
         doe.sexualOrientation = -100;
         var egg = this.generateEgg(stag, doe);
         egg.currentScale = 0;
+        egg.generation++;
         SnailUtil.positionNewSnail(egg);
         if (bestFriend != null) {
             egg.getTraitsInCommonWithBff();
@@ -44,31 +45,33 @@ class FoalGenerator extends SnailGenerator {
         snail.stagName = stag.name;
         snail.doeName = doe.name;
 
-        snail.shellColorGene = this.getColorGene(stag.shellColorGene, doe.shellColorGene);
-        snail.shellColor = this.pickColorFromGene(snail.shellColorGene);
-
-        snail.eyeColorGene = this.getColorGene(stag.eyeColorGene, doe.eyeColorGene);
-        snail.eyeColor = this.pickColorFromGene(snail.eyeColorGene);
-
-        snail.patternColorGene = this.getColorGene(stag.patternColorGene, doe.patternColorGene);
-        snail.patternColor = this.pickColorFromGene(snail.patternColorGene);
-
-        snail.shellPatternGene = this.getPatternGene(stag.shellPatternGene, doe.shellPatternGene);
-        snail.patternType = this.pickPatternFromGene(snail.shellPatternGene);
+        for (var i = 0; i < stag.genes.length; i++) {
+            var stagGene = stag.genes[i];
+            var doeGene = doe.genes[i];
+            var foalGene = this.getGene(stagGene, doeGene);
+            snail.genes.push(foalGene);
+            switch (foalGene.name) {
+                case "Pattern Shape":
+                    snail.patternType = this.pickPatternFromGene(foalGene);
+                    break;
+                case "Pattern Color":
+                    snail.patternColor = this.pickColorFromGene(foalGene);
+                    break;
+                case "Shell Color": 
+                    snail.shellColor = this.pickColorFromGene(foalGene);
+                    break;
+                case "Eye Color":
+                    snail.eyeColor = this.pickColorFromGene(foalGene);
+                    break;
+            }
+        }
         return snail;
     }
 
-    getColorGene(stagGene, doeGene) {
-        var gene = new ColorGene(stagGene.name);
+    getGene(stagGene, doeGene) {
+        var gene = Util.deepCopyObj(stagGene);
         gene.allele1 = this.generateAlleles(stagGene.allele1, stagGene.allele2);
-        gene.allele2 = this.generateAlleles(doeGene.allele1, stagGene.allele2);
-        return gene;
-    }
-
-    getPatternGene(stagGene, doeGene) {
-        var gene = new PatternGene(stagGene.name);
-        gene.allele1 = this.generateAlleles(stagGene.allele1, stagGene.allele2);
-        gene.allele2 = this.generateAlleles(doeGene.allele1, stagGene.allele2);
+        gene.allele2 = this.generateAlleles(doeGene.allele1, doeGene.allele2);
         return gene;
     }
 

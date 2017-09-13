@@ -1,6 +1,7 @@
 class Gene {
     constructor(name) {
         this.name = name;
+        this.isActive = false;
     }
 }
 
@@ -22,7 +23,7 @@ class PatternGene extends Gene {
 }
 
 class GeneUtil {
-    static getDominantTrait(gene) {
+    static getDominantAllele(gene) {
         var dominantTrait = null;
         if (gene instanceof ColorGene) {
             dominantTrait = GeneUtil.getColorGeneDominantTrait(gene);

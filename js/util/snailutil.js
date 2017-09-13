@@ -19,12 +19,14 @@ var CauseOfDeath = {
 class SnailUtil {
     static getSelectedSnail() {
         var detailSnailName = document.getElementById("selectedSnailName").innerText;
-        console.log(detailSnailName);
         for (var i = 0; i < eligibleSnails.length; i++) {
             var snail = eligibleSnails[i];
             if (snail.name == detailSnailName) {
                 return snail;
             }
+        }
+        if (bestFriend && detailSnailName === bestFriend.name) {
+            return bestFriend;
         }
     }
 
@@ -37,22 +39,32 @@ class SnailUtil {
         }
     }
 
+    static getBestAttempt() {
+        var allSnails = SnailUtil.getAllLiveSnails();
+        for (var i = 0; i < allSnails.length; i++) {
+            var snail = allSnails[i];
+            if (snail.isBestAttempt) {
+                return snail;
+            }
+        }
+        return null;
+    }
+
     static previewBreeding() {
         try {
             var selectedSnail = SnailUtil.getSelectedSnail();
             var select = document.getElementById('breedSnailSelect');
             var mateName = select.options[select.selectedIndex].value;
             var mateSnail = SnailUtil.getSnailByName(mateName);
-            var shellColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.shellColorGene, mateSnail.shellColorGene);
-            var eyeColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.eyeColorGene, mateSnail.eyeColorGene);
-            var patternColorGeneCombos = SnailUtil.getGeneCombos(selectedSnail.patternColorGene, mateSnail.patternColorGene);
-            var patternShapeGeneCombos = SnailUtil.getGeneCombos(selectedSnail.shellPatternGene, mateSnail.shellPatternGene);
-            var geneCombos = [
-                shellColorGeneCombos,
-                eyeColorGeneCombos,
-                patternColorGeneCombos,
-                patternShapeGeneCombos
-            ];
+            var geneCombos = [];
+            for (var i = 0; i < selectedSnail.genes.length; i++) {
+                var ssGene = selectedSnail.genes[i];
+                var msGene = mateSnail.findGene(ssGene.name);
+                var combos = SnailUtil.getGeneCombos(ssGene, msGene);
+                geneCombos.push(combos);
+
+            }
+
             ui.displayBreedingPreviewChart(selectedSnail.name, mateName, geneCombos);
         }
         catch (e) {
@@ -87,11 +99,13 @@ class SnailUtil {
             var select = document.getElementById('breedSnailSelect');
             var mateName = select.options[select.selectedIndex].value;
             var mateSnail = SnailUtil.getSnailByName(mateName);
+          
             var someoneDied = SnailUtil.checkCasualties(selectedSnail, mateSnail);
             if (!someoneDied) {
                 var generator = new FoalGenerator();
                 generator.breedSnails(selectedSnail, mateSnail);
             }
+          
             incrementDay();
         }
         catch (e) {
@@ -141,7 +155,7 @@ class SnailUtil {
 
     static doOldDeathRoll(snail) {
         var cod = null;
-        var chance = snail.age - 5;
+        var chance = snail.age - 10;
         var rand = MathUtil.getRandomInt(1, 8);
         if (rand <= chance) {
             cod = CauseOfDeath.TooOld;
@@ -177,16 +191,16 @@ class SnailUtil {
             newSnails.push(newSnail);
         }
         eligibleSnails = newSnails;
+        immatureSnails = [];
         SnailUtil.getClosestSnailToBFF();
         draw();
         if (daysLeft !== 15) {
             incrementDay();
         }
-        console.log("wat");
     }
 
     static refreshSnailGrid() {
-        var allSnails = SnailUtil.getAllLiveSnails();
+        var allSnails = SnailUtil.getAllSnails();
         if (allSnails.length === 0) {
             return;
         }
